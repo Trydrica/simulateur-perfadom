@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Tests Gravité - Simulateur Perfadom</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 40px auto;
+      padding: 20px;
+      background: #f8f8f8;
+      border: 1px solid #ccc;
+    }
+    h1 { text-align: center; }
+    .test {
+      margin-bottom: 10px;
+      padding: 10px;
+      background: #fff;
+      border-left: 4px solid #007bff;
+    }
+    .pass { border-left-color: green; }
+    .fail { border-left-color: red; color: red; }
+    code { background: #eee; padding: 2px 4px; }
+  </style>
+</head>
+<body>
+
+  <h1>Tests automatiques — Forfait Gravité</h1>
+  <div id="resultats"></div>
+
+  <script>
+    function calculSuiviGravite(jours, perfs) {
+      const semaines = Math.floor(jours / 7);
+      const joursRestants = jours % 7;
+      const perfsRestantes = joursRestants * perfs;
+
+      let result = [];
+      if (semaines > 0) result.push(`PERFADOM 18 × ${semaines}`);
+      if (perfsRestantes > 0) result.push(`PERFADOM 17 × ${perfsRestantes}`);
+      return result.join(" + ");
+    }
+
+    const tests = [
+      { jours: 7, perfs: 1, expected: "PERFADOM 18 × 1" },
+      { jours: 9, perfs: 1, expected: "PERFADOM 18 × 1 + PERFADOM 17 × 2" },
+      { jours: 15, perfs: 1, expected: "PERFADOM 18 × 2 + PERFADOM 17 × 1" },
+      { jours: 22, perfs: 1, expected: "PERFADOM 18 × 3 + PERFADOM 17 × 1" },
+      { jours: 29, perfs: 1, expected: "PERFADOM 18 × 4 + PERFADOM 17 × 1" },
+      { jours: 30, perfs: 2, expected: "PERFADOM 18 × 4 + PERFADOM 17 × 2" },
+      { jours: 5, perfs: 2, expected: "PERFADOM 17 × 10" },
+      { jours: 14, perfs: 1, expected: "PERFADOM 18 × 2" },
+      { jours: 21, perfs: 3, expected: "PERFADOM 18 × 3" },
+      { jours: 23, perfs: 2, expected: "PERFADOM 18 × 3 + PERFADOM 17 × 2" }
+    ];
+
+    const container = document.getElementById("resultats");
+
+    tests.forEach(({ jours, perfs, expected }, i) => {
+      const actual = calculSuiviGravite(jours, perfs);
+      const div = document.createElement("div");
+      div.className = "test " + (actual === expected ? "pass" : "fail");
+      div.innerHTML = `
+        <strong>Test ${i + 1}</strong> : ${jours} jours, ${perfs} perf(s)/jour<br>
+        ➤ <code>${actual}</code><br>
+        ${actual === expected ? "✅ Test réussi" : `❌ Attendu : <code>${expected}</code>`}
+      `;
+      container.appendChild(div);
+    });
+  </script>
+
+</body>
+</html>

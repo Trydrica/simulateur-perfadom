@@ -10,12 +10,10 @@
 
   <form id="perfadomForm">
     <label for="type">Type de perfusion :</label>
-    <select id="type" required>
-      <option value="">-- Choisir --</option>
-      <option value="electrique">Système actif électrique</option>
-      <option value="diffuseur">Diffuseur portable</option>
-      <option value="gravite">Gravité</option>
-    </select>
+<select id="type" required disabled>
+  <option value="gravite" selected>Gravité (en cours de développement)</option>
+</select>
+<input type="hidden" id="type" value="gravite">
 
     <label for="perfsParJour">Nombre de perfusions par jour :</label>
     <input type="number" id="perfsParJour" min="1" required>

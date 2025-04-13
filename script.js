@@ -1,3 +1,5 @@
+// script.js 
+
 document.getElementById('perfadomForm').addEventListener('submit', function (e) {
     e.preventDefault();
   
@@ -16,79 +18,47 @@ document.getElementById('perfadomForm').addEventListener('submit', function (e) 
     }
   
     let result = "";
-    const semaines = Math.ceil(jours / 7);
     const totalPerfs = perfs * jours;
   
     // INSTALLATION
     const forfaitsInstallation = {
-      electrique: [
-        ["PERFADOM 1", "Installation 1ère perf", 357.20],
-        ["PERFADOM 2", "Installation 2e perf", 52.80],
-        ["PERFADOM 7", "Installation 3e perf", 52.80],
-        ["PERFADOM 8", "Installation 4e perf", 52.80]
-      ],
-      diffuseur: [
-        ["PERFADOM 4", "Installation 1ère perf", 135.33],
-        ["PERFADOM 5", "Installation 2e perf", 52.80],
-        ["PERFADOM 7", "Installation 3e perf", 52.80],
-        ["PERFADOM 8", "Installation 4e perf", 52.80]
-      ],
       gravite: [
         ["PERFADOM 6", "Installation + suivi", 74.57]
       ]
     };
   
-    if (installation) {
-      const inst = forfaitsInstallation[type];
-      if (inst) {
-        for (let i = 0; i < inst.length && i < perfs; i++) {
-          result += `- ${inst[i][1]} : ${inst[i][0]} — ${inst[i][2].toFixed(2)} €<br>`;
-        }
-      }
+    if (installation && forfaitsInstallation[type]) {
+      forfaitsInstallation[type].forEach(f => {
+        result += `- ${f[1]} : ${f[0]}<br>`;
+      });
     }
   
-    // SUIVI
+    // SUIVI - GRAVITE UNIQUEMENT
     if (type === 'gravite') {
-      if (totalPerfs < 15) {
-        const semainesPleines = Math.floor(jours / 7);
-        const joursRestants = jours % 7;
+      const semainesCompletes = Math.floor(jours / 7);
+      const joursRestants = jours % 7;
   
-        if (semainesPleines > 0) {
-          result += `- Suivi : PERFADOM 18 × ${semainesPleines} — 74,57 €/semaine<br>`;
-        }
+      let codeSuivi = "";
+      if (perfs === 1) codeSuivi = "PERFADOM 18";
+      else if (perfs === 2) codeSuivi = "PERFADOM 19";
+      else if (perfs > 2) codeSuivi = "PERFADOM 20";
   
-        if (joursRestants > 0) {
-          const perfsRestantes = joursRestants * perfs;
-          result += `- À la perfusion : PERFADOM 17 × ${perfsRestantes} — 10,80 €/perf<br>`;
-        }
-      } else {
-        // ≥ 15 perfusions
-        let code, tarif;
-        if (perfs === 1) [code, tarif] = ["PERFADOM 18", 74.57];
-        else if (perfs === 2) [code, tarif] = ["PERFADOM 19", 122.97];
-        else [code, tarif] = ["PERFADOM 20", 204.24];
+      const perfsHebdo = semainesCompletes * 7 * perfs;
+      const perfsRestantes = totalPerfs - perfsHebdo;
   
-        result += `- Suivi : ${code} × ${semaines} — ${tarif.toFixed(2)} €/semaine<br>`;
+      if (semainesCompletes > 0) {
+        result += `- Suivi : ${codeSuivi} × ${semainesCompletes}<br>`;
       }
-    }
   
-    else if (type === 'electrique') {
-      let code, tarif;
-      if (perfs === 1) [code, tarif] = ["PERFADOM 30", 240.15];
-      else if (perfs === 2) [code, tarif] = ["PERFADOM 31", 469.44];
-      else if (perfs === 3) [code, tarif] = ["PERFADOM 32", 693.36];
-      else [code, tarif] = ["PERFADOM 33", 815.18];
-  
-      result += `- Suivi : ${code} × ${semaines} — ${tarif.toFixed(2)} €/semaine<br>`;
-    }
-  
-    else if (type === 'diffuseur') {
-      let code, tarif;
-      if (perfs === 1) [code, tarif] = ["PERFADOM 25", 113.28];
-      else if (perfs === 2) [code, tarif] = ["PERFADOM 26", 226.56];
-      else [code, tarif] = ["PERFADOM 27", 339.84];
-  
-      result += `- Suivi : ${code} × ${semaines} — ${tarif.toFixed(2)} €/semaine<br>`;
+      if (perfsRestantes > 0) {
+        if (perfsRestantes > 6) {
+          result += `- Avertissement : plus de 6 PERFADOM 17 non autorisés par semaine.<br>`;
+        }
+        if (perfs > 3) {
+          result += `- Avertissement : max 3 perfusions/jour autorisées pour PERFADOM 17.<br>`;
+        }
+        result += `- À la perfusion : PERFADOM 17 × ${perfsRestantes}<br>`;
+      }
     }
   
     // AUTRES FORFAITS
@@ -102,3 +72,4 @@ document.getElementById('perfadomForm').addEventListener('submit', function (e) 
   
     resultDiv.innerHTML = result || "Aucun forfait applicable.";
   });
+  
